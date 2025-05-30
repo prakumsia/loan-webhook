@@ -1,0 +1,4 @@
+Intent: "I want a loan"
+→ Route Fulfillment:
+   - Enable Webhook call
+   - Tag: "getLoanOffer"

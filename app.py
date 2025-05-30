@@ -1,19 +1,35 @@
-import os
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return 'Loan Webhook is live!'
-
-@app.route('/webhook', methods=['POST'])
+@app.route("/webhook", methods=["POST"])
 def webhook():
     req = request.get_json()
-    print("Received request:", req)
-    # Sample response
-    return jsonify({"fulfillmentText": "Webhook response from Cloud Run!"})
+    tag = req.get("fulfillmentInfo", {}).get("tag", "")
 
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
+    if tag == "getLoanOffer":
+        # Replace with your real logic or Excel-driven output
+        return jsonify({
+            "fulfillment_response": {
+                "messages": [
+                    {
+                        "text": {
+                            "text": [
+                                "Based on your profile, you’re eligible for ₹5,00,000 at 11.5% interest over 5 years."
+                            ]
+                        }
+                    }
+                ]
+            }
+        })
+
+    return jsonify({
+        "fulfillment_response": {
+            "messages": [
+                {"text": {"text": ["Sorry, I didn’t understand."]}}
+            ]
+        }
+    })
+
+if __name__ == "__main__":
+    app.run(debug=True)
