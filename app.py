@@ -1,35 +1,25 @@
+
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route("/webhook", methods=["POST"])
+@app.route("/", methods=["POST"])
 def webhook():
-    req = request.get_json()
-    tag = req.get("fulfillmentInfo", {}).get("tag", "")
+    req = request.get_json(force=True)
+    intent = req.get("fulfillmentInfo", {}).get("tag", "")
 
-    if tag == "getLoanOffer":
-        # Replace with your real logic or Excel-driven output
+    if intent == "loan_enquiry":
         return jsonify({
             "fulfillment_response": {
-                "messages": [
-                    {
-                        "text": {
-                            "text": [
-                                "Based on your profile, you’re eligible for ₹5,00,000 at 11.5% interest over 5 years."
-                            ]
-                        }
-                    }
-                ]
+                "messages": [{"text": {"text": ["How much loan do you need and for how many years?"]}}]
+            }
+        })
+    else:
+        return jsonify({
+            "fulfillment_response": {
+                "messages": [{"text": {"text": ["I didn't understand. Can you rephrase?"]}}]
             }
         })
 
-    return jsonify({
-        "fulfillment_response": {
-            "messages": [
-                {"text": {"text": ["Sorry, I didn’t understand."]}}
-            ]
-        }
-    })
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8080)
